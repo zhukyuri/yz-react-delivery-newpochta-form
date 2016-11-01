@@ -6,6 +6,10 @@
     "type": "git",
     "url": "git+https://github.com/zhukyuri/z-react-delivery-newpochta-form.git"
   },
+  "main": "index.js",
+  "bugs": {
+    "url": "https://github.com/zhukyuri/z-react-delivery-newpochta-form/issues"
+  },
   "author": "Yuriy Zhuk",
   "license": "MIT",
   "homepage": "https://github.com/zhukyuri/z-react-delivery-newpochta-form#readme",
@@ -19,11 +23,10 @@
     "нова пошта",
     "новая почта",
     "delivery",
-    "shop"
+    "shop",
+    "form",
+    "react-form"
   ],
-  "options": {
-    "mocha": "--require scripts/mocha_runner src/**/__tests__/**/*.js"
-  },
   "scripts": {
     "prepublish": "babel --plugins 'transform-es2015-modules-umd' src --ignore __tests__ --out-dir ./dist",
     "lint": "eslint ./src",
@@ -55,10 +58,7 @@
   "peerDependencies": {},
   "dependencies": {
     "axios": "^0.15.2",
-    "babel-runtime": "^6.6.1"
-  },
-  "main": "index.js",
-  "bugs": {
-    "url": "https://github.com/zhukyuri/z-react-delivery-newpochta-form/issues"
+    "babel-runtime": "^6.6.1",
+    "yz-react-deliveri-newpochta": "^1.0.33"
   }
 }

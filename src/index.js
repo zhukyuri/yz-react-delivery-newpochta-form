@@ -1,14 +1,12 @@
-import React, {PropTypes} from 'react';
-import { config } from './config';
-import axios from 'axios';
+import React, { PropTypes } from 'react';
+import ApiNovaPochta from 'yz-react-deliveri-newpochta';
 
 
-class ApiNovaPochta extends React.Component {
+class FormNovaPochta extends React.Component {
 
-    constructor(props) {
-        console.log('constructor props', props );
-
-        super(props);
+    constructor(prop) {
+        super();
+        this.Api = new ApiNovaPochta;
         this.state = {
             listCities: [],
             listCitiesCurrent: [],
@@ -27,12 +25,12 @@ class ApiNovaPochta extends React.Component {
         this.onChangeWarehous = this.onChangeWarehous.bind(this);
         this.onChangeArea = this.onChangeArea.bind(this);
         this.getCitiesOfArea = this.getCitiesOfArea.bind(this);
+        this.apiKey = prop.apiKey;
         this.stylesNP = this.stylesNP.bind(this);
-        this.apiKey = !!this.props.apiKey ? this.props.apiKey : '';
-        this.conf = config;
         this.s = this.stylesNP();
 
-        console.log('constructor',this.apiKey )
+        //  console.log('constructor', prop.apiKey );
+        //  console.log('getAreas', getAreas );
     }
 
     stylesNP() {
@@ -63,7 +61,7 @@ class ApiNovaPochta extends React.Component {
     }
 
     componentDidMount() {
-        this.getAreas(this.cbAreas, this.apiKey);
+        this.Api.getAreas(this.cbAreas, this.apiKey);
     }
 
     shouldComponentUpdate() {
@@ -79,7 +77,6 @@ class ApiNovaPochta extends React.Component {
     }
 
     cbAreas(result) {
-        console.log('data Areas', result);
         let res = [];
         result.data.forEach((item)=> {
             res.push({
@@ -95,7 +92,7 @@ class ApiNovaPochta extends React.Component {
                 selectArea: res[1],
                 listWarehouses: []
             });
-            this.getCities(this.cbCities, this.apiKey);
+            this.Api.getCities(this.cbCities, this.apiKey);
         }
     }
 
@@ -120,7 +117,7 @@ class ApiNovaPochta extends React.Component {
             });
 
             if (this.state.selectArea) {
-                this.getWarehouses(
+                this.Api.getWarehouses(
                     this.cbWarehouse, this.apiKey, {"CityName": this.getCitiesOfArea(res, this.state.selectArea)[0].Description});
             }
         }
@@ -131,7 +128,6 @@ class ApiNovaPochta extends React.Component {
     }
 
     cbWarehouse(result) {
-        console.log('data Warehouse', result.data);
         let res = [];
         result.data.forEach((item)=> {
             res.push(item.Description);
@@ -141,7 +137,6 @@ class ApiNovaPochta extends React.Component {
 
     onChangeArea(e) {
         let value = e.target.value;
-        console.log('onChangeArea', value);
         let selectArea = this.state.listAreas[parseInt(value)];
         let selectCity = this.getCitiesOfArea(this.state.listCities, selectArea);
         if( selectCity.length>0 ) {
@@ -153,7 +148,7 @@ class ApiNovaPochta extends React.Component {
                 selectCityVal: '0',
                 selectWarehousVal: '0'
             });
-            this.getWarehouses(
+            this.Api.getWarehouses(
                 this.cbWarehouse,
                 this.apiKey,
                 {"CityName": selectCity[0].Description});
@@ -177,14 +172,13 @@ class ApiNovaPochta extends React.Component {
 
     onChangeCity(e) {
         let value = e.target.value;
-        console.log('onChangeCity', value);
         this.setState({
             selectCity: this.state.listCitiesCurrent[parseInt(value)],
             selectCityVal: value,
             selectWarehousVal: '0'
 
         });
-        this.getWarehouses(
+        this.Api.getWarehouses(
             this.cbWarehouse,
             this.apiKey,
             {"CityName": this.state.listCitiesCurrent[parseInt(value)].Description});
@@ -196,7 +190,7 @@ class ApiNovaPochta extends React.Component {
     }
 
     render() {
-        console.log('render');
+//    console.log('render');
         return (
             <div style={this.s.container}>
                 <select style={this.s.select}
@@ -220,73 +214,10 @@ class ApiNovaPochta extends React.Component {
             </div>
         )
     }
-
-    // ******  API queries NP ******
-    axiosRequest(model, method, apiKey, prop, cb) {
-        console.log('axiosRequest url', this.conf.apiUrl);
-        console.log('axiosRequest apiKey', apiKey);
-        prop = !!(prop) ? prop : {};
-        var data = JSON.stringify({
-            "apiKey": !!apiKey ? apiKey : this.apiKey,
-            "modelName": model,
-            "calledMethod": method,
-            "methodProperties": prop
-        });
-        axios(
-            {
-                url: this.conf.apiUrl,
-                method: 'post',
-                headers: {"Content-type": "application/json; charset=UTF-8"},
-                data: data
-            }
-        )
-            .then((res) => {
-                return res.data;
-            })
-            .then((res) => {
-                cb(res);
-            })
-            .catch((err) => {
-                console.log('* ERROR * CATCH ', err);
-            });
-    }
-
-    getAreas(cb, apiKey) {
-        let model = 'Address';
-        let method = 'getAreas';
-        let prop = {};
-        return this.axiosRequest(model, method, apiKey, prop, cb);
-    }
-
-    getSettlements(cb, apiKey, prop) {
-        let model = 'AddressGeneral';
-        let method = 'getSettlements';
-        return this.axiosRequest(model, method, apiKey, prop, cb);
-    }
-
-    getCities(cb, apiKey) {
-        let model = 'Address';
-        let method = 'getCities';
-        let prop = {};
-        return this.axiosRequest(model, method, apiKey, prop, cb);
-    }
-
-    getWarehouses(cb, apiKey, prop) {
-        let model = 'AddressGeneral';
-        let method = 'getWarehouses';
-        return this.axiosRequest(model, method, apiKey, prop, cb);
-    }
-
-    getWarehouseTypes(cb, apiKey) {
-        let model = 'AddressGeneral';
-        let method = 'getWarehouseTypes';
-        return this.axiosRequest(model, method, apiKey, prop, cb);
-    }
-
 }
 
-//ApiNovaPochta.propTypes = {
-//    apiKey: PropTypes.string.isRequired,
-//};
+FormNovaPochta.propTypes = {
+    apiKey: PropTypes.string.isRequired,
+};
 
-export default ApiNovaPochta;
+export default FormNovaPochta;

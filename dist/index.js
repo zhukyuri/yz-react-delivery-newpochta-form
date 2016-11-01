@@ -1,16 +1,16 @@
 (function (global, factory) {
     if (typeof define === "function" && define.amd) {
-        define(['exports', 'react', './config', 'axios'], factory);
+        define(['exports', 'react', 'yz-react-deliveri-newpochta'], factory);
     } else if (typeof exports !== "undefined") {
-        factory(exports, require('react'), require('./config'), require('axios'));
+        factory(exports, require('react'), require('yz-react-deliveri-newpochta'));
     } else {
         var mod = {
             exports: {}
         };
-        factory(mod.exports, global.react, global.config, global.axios);
+        factory(mod.exports, global.react, global.yzReactDeliveriNewpochta);
         global.index = mod.exports;
     }
-})(this, function (exports, _react, _config, _axios) {
+})(this, function (exports, _react, _yzReactDeliveriNewpochta) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -19,7 +19,7 @@
 
     var _react2 = _interopRequireDefault(_react);
 
-    var _axios2 = _interopRequireDefault(_axios);
+    var _yzReactDeliveriNewpochta2 = _interopRequireDefault(_yzReactDeliveriNewpochta);
 
     function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : {
@@ -75,16 +75,15 @@
         if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
     }
 
-    var ApiNovaPochta = function (_React$Component) {
-        _inherits(ApiNovaPochta, _React$Component);
+    var FormNovaPochta = function (_React$Component) {
+        _inherits(FormNovaPochta, _React$Component);
 
-        function ApiNovaPochta(props) {
-            _classCallCheck(this, ApiNovaPochta);
+        function FormNovaPochta(prop) {
+            _classCallCheck(this, FormNovaPochta);
 
-            console.log('constructor props', props);
+            var _this = _possibleConstructorReturn(this, (FormNovaPochta.__proto__ || Object.getPrototypeOf(FormNovaPochta)).call(this));
 
-            var _this = _possibleConstructorReturn(this, (ApiNovaPochta.__proto__ || Object.getPrototypeOf(ApiNovaPochta)).call(this, props));
-
+            _this.Api = new _yzReactDeliveriNewpochta2.default();
             _this.state = {
                 listCities: [],
                 listCitiesCurrent: [],
@@ -103,16 +102,16 @@
             _this.onChangeWarehous = _this.onChangeWarehous.bind(_this);
             _this.onChangeArea = _this.onChangeArea.bind(_this);
             _this.getCitiesOfArea = _this.getCitiesOfArea.bind(_this);
+            _this.apiKey = prop.apiKey;
             _this.stylesNP = _this.stylesNP.bind(_this);
-            _this.apiKey = !!_this.props.apiKey ? _this.props.apiKey : '';
-            _this.conf = _config.config;
             _this.s = _this.stylesNP();
 
-            console.log('constructor', _this.apiKey);
+            //  console.log('constructor', prop.apiKey );
+            //  console.log('getAreas', getAreas );
             return _this;
         }
 
-        _createClass(ApiNovaPochta, [{
+        _createClass(FormNovaPochta, [{
             key: 'stylesNP',
             value: function stylesNP() {
                 return {
@@ -143,7 +142,7 @@
         }, {
             key: 'componentDidMount',
             value: function componentDidMount() {
-                this.getAreas(this.cbAreas, this.apiKey);
+                this.Api.getAreas(this.cbAreas, this.apiKey);
             }
         }, {
             key: 'shouldComponentUpdate',
@@ -159,7 +158,6 @@
         }, {
             key: 'cbAreas',
             value: function cbAreas(result) {
-                console.log('data Areas', result);
                 var res = [];
                 result.data.forEach(function (item) {
                     res.push({
@@ -175,7 +173,7 @@
                         selectArea: res[1],
                         listWarehouses: []
                     });
-                    this.getCities(this.cbCities, this.apiKey);
+                    this.Api.getCities(this.cbCities, this.apiKey);
                 }
             }
         }, {
@@ -201,7 +199,7 @@
                     });
 
                     if (this.state.selectArea) {
-                        this.getWarehouses(this.cbWarehouse, this.apiKey, { "CityName": this.getCitiesOfArea(res, this.state.selectArea)[0].Description });
+                        this.Api.getWarehouses(this.cbWarehouse, this.apiKey, { "CityName": this.getCitiesOfArea(res, this.state.selectArea)[0].Description });
                     }
                 }
             }
@@ -215,7 +213,6 @@
         }, {
             key: 'cbWarehouse',
             value: function cbWarehouse(result) {
-                console.log('data Warehouse', result.data);
                 var res = [];
                 result.data.forEach(function (item) {
                     res.push(item.Description);
@@ -226,7 +223,6 @@
             key: 'onChangeArea',
             value: function onChangeArea(e) {
                 var value = e.target.value;
-                console.log('onChangeArea', value);
                 var selectArea = this.state.listAreas[parseInt(value)];
                 var selectCity = this.getCitiesOfArea(this.state.listCities, selectArea);
                 if (selectCity.length > 0) {
@@ -238,7 +234,7 @@
                         selectCityVal: '0',
                         selectWarehousVal: '0'
                     });
-                    this.getWarehouses(this.cbWarehouse, this.apiKey, { "CityName": selectCity[0].Description });
+                    this.Api.getWarehouses(this.cbWarehouse, this.apiKey, { "CityName": selectCity[0].Description });
                 } else {
                     var space = [{
                         Ref: '-',
@@ -260,14 +256,13 @@
             key: 'onChangeCity',
             value: function onChangeCity(e) {
                 var value = e.target.value;
-                console.log('onChangeCity', value);
                 this.setState({
                     selectCity: this.state.listCitiesCurrent[parseInt(value)],
                     selectCityVal: value,
                     selectWarehousVal: '0'
 
                 });
-                this.getWarehouses(this.cbWarehouse, this.apiKey, { "CityName": this.state.listCitiesCurrent[parseInt(value)].Description });
+                this.Api.getWarehouses(this.cbWarehouse, this.apiKey, { "CityName": this.state.listCitiesCurrent[parseInt(value)].Description });
             }
         }, {
             key: 'onChangeWarehous',
@@ -278,7 +273,7 @@
         }, {
             key: 'render',
             value: function render() {
-                console.log('render');
+                //    console.log('render');
                 return _react2.default.createElement(
                     'div',
                     { style: this.s.container },
@@ -325,72 +320,14 @@
                     )
                 );
             }
-        }, {
-            key: 'axiosRequest',
-            value: function axiosRequest(model, method, apiKey, prop, cb) {
-                console.log('axiosRequest url', this.conf.apiUrl);
-                console.log('axiosRequest apiKey', apiKey);
-                prop = !!prop ? prop : {};
-                var data = JSON.stringify({
-                    "apiKey": !!apiKey ? apiKey : this.apiKey,
-                    "modelName": model,
-                    "calledMethod": method,
-                    "methodProperties": prop
-                });
-                (0, _axios2.default)({
-                    url: this.conf.apiUrl,
-                    method: 'post',
-                    headers: { "Content-type": "application/json; charset=UTF-8" },
-                    data: data
-                }).then(function (res) {
-                    return res.data;
-                }).then(function (res) {
-                    cb(res);
-                }).catch(function (err) {
-                    console.log('* ERROR * CATCH ', err);
-                });
-            }
-        }, {
-            key: 'getAreas',
-            value: function getAreas(cb, apiKey) {
-                var model = 'Address';
-                var method = 'getAreas';
-                var prop = {};
-                return this.axiosRequest(model, method, apiKey, prop, cb);
-            }
-        }, {
-            key: 'getSettlements',
-            value: function getSettlements(cb, apiKey, prop) {
-                var model = 'AddressGeneral';
-                var method = 'getSettlements';
-                return this.axiosRequest(model, method, apiKey, prop, cb);
-            }
-        }, {
-            key: 'getCities',
-            value: function getCities(cb, apiKey) {
-                var model = 'Address';
-                var method = 'getCities';
-                var prop = {};
-                return this.axiosRequest(model, method, apiKey, prop, cb);
-            }
-        }, {
-            key: 'getWarehouses',
-            value: function getWarehouses(cb, apiKey, prop) {
-                var model = 'AddressGeneral';
-                var method = 'getWarehouses';
-                return this.axiosRequest(model, method, apiKey, prop, cb);
-            }
-        }, {
-            key: 'getWarehouseTypes',
-            value: function getWarehouseTypes(cb, apiKey) {
-                var model = 'AddressGeneral';
-                var method = 'getWarehouseTypes';
-                return this.axiosRequest(model, method, apiKey, prop, cb);
-            }
         }]);
 
-        return ApiNovaPochta;
+        return FormNovaPochta;
     }(_react2.default.Component);
 
-    exports.default = ApiNovaPochta;
+    FormNovaPochta.propTypes = {
+        apiKey: _react.PropTypes.string.isRequired
+    };
+
+    exports.default = FormNovaPochta;
 });
