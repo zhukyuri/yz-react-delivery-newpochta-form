@@ -1,18 +1,18 @@
 {
   "name": "yz-react-delivery-newpochta-form",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "React form for delivery New Post of Ukraine",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zhukyuri/z-react-delivery-newpochta-form.git"
+    "url": "git+https://github.com/zhukyuri/yz-react-delivery-newpochta-form.git"
   },
   "main": "index.js",
   "bugs": {
-    "url": "https://github.com/zhukyuri/z-react-delivery-newpochta-form/issues"
+    "url": "https://github.com/zhukyuri/yz-react-delivery-newpochta-form/issues"
   },
   "author": "Yuriy Zhuk",
   "license": "MIT",
-  "homepage": "https://github.com/zhukyuri/z-react-delivery-newpochta-form#readme",
+  "homepage": "https://github.com/zhukyuri/yz-react-delivery-newpochta-form#readme",
   "keywords": [
     "react-component",
     "react",
