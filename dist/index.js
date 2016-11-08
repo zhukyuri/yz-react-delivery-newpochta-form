@@ -27,6 +27,12 @@
     };
   }
 
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
+
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
@@ -85,14 +91,15 @@
 
       _this.Api = new _yzReactDeliveriNewpochta2.default();
       _this.state = {
+        listAreas: [],
         listCities: [],
         listCitiesCurrent: [],
-        selectCity: null,
-        selectCityVal: '',
         listWarehouses: [],
-        selectWarehousVal: null,
-        listAreas: [],
         selectArea: null,
+        selectCity: null,
+        selectWarehous: null,
+        selectCityVal: '',
+        selectWarehousVal: '',
         selectAreaVal: ''
       };
       _this.cbCities = _this.cbCities.bind(_this);
@@ -107,6 +114,8 @@
       _this.apiKey = props.apiKey;
       _this.stylesNP = _this.stylesNP.bind(_this);
       _this.s = _this.stylesNP();
+
+      _this.result = _this.props.cb;
       return _this;
     }
 
@@ -141,28 +150,31 @@
     }, {
       key: 'componentDidMount',
       value: function componentDidMount() {
-
-        console.log('constructor apiKey:', this.apiKey);
-        console.log('this.Api.getAreas', this.Api.getAreas);
-        console.log('this.cbAreas', this.cbAreas);
-
         this.Api.getAreas(this.cbAreas, this.apiKey);
+      }
+    }, {
+      key: 'componentDidUpdate',
+      value: function componentDidUpdate() {
+        var res = {
+          selectArea: this.state.selectArea.Description,
+          selectCity: this.state.selectCity.Description,
+          selectWarehous: this.state.selectWarehous.Description
+        };
+        //    console.log('componentDidUpdate', this.state);
+        this.result(res);
       }
     }, {
       key: 'shouldComponentUpdate',
       value: function shouldComponentUpdate() {
         if (!this.state.selectArea) {
-          console.log('should: Not selectArea', this.state);
           return false;
         } else if (!this.state.selectCity) {
-          console.log('should: Not selectCities', this.state);
           return false;
         } else return true;
       }
     }, {
       key: 'cbAreas',
       value: function cbAreas(result) {
-        console.log('cbAreas', result);
         var res = [];
         result.data.forEach(function (item) {
           res.push({
@@ -200,7 +212,8 @@
             listCities: res,
             listCitiesCurrent: selectCities,
             selectCity: selectCities[0],
-            selectCityVal: '0'
+            selectCityVal: '0',
+            selectWarehousVal: '0'
           });
 
           if (this.state.selectArea) {
@@ -211,11 +224,23 @@
     }, {
       key: 'cbWarehouse',
       value: function cbWarehouse(result) {
+        var space = [{
+          Ref: '-',
+          Description: '- - - - - - - - - - - - - - - - '
+        }];
         var res = [];
         result.data.forEach(function (item) {
-          res.push(item.Description);
+          res.push({
+            Ref: item.Ref,
+            Description: item.Description
+          });
         });
-        this.setState({ listWarehouses: res });
+        var warehousVal = this.state.selectWarehousVal;
+        var warehous = res.length > 0 ? res[warehousVal] : space;
+        this.setState({
+          listWarehouses: res,
+          selectWarehous: warehous
+        });
       }
     }, {
       key: 'getCitiesOfArea',
@@ -233,9 +258,9 @@
         if (selectCity.length > 0) {
           this.setState({
             selectArea: selectArea,
-            selectAreaVal: value,
-            listCitiesCurrent: selectCity,
             selectCity: selectCity[0],
+            listCitiesCurrent: selectCity,
+            selectAreaVal: value,
             selectCityVal: '0',
             selectWarehousVal: '0'
           });
@@ -248,11 +273,12 @@
 
           this.setState({
             selectArea: selectArea,
-            selectAreaVal: value,
-            listCitiesCurrent: space,
             selectCity: space[0],
-            selectCityVal: '0',
+            selectWarehous: space[0],
+            listCitiesCurrent: space,
             listWarehouses: ['- - - - - - - - - - - - - - - - '],
+            selectAreaVal: value,
+            selectCityVal: '0',
             selectWarehousVal: '0'
           });
         }
@@ -272,19 +298,23 @@
     }, {
       key: 'onChangeWarehous',
       value: function onChangeWarehous(e) {
-        console.log(e.target.value);
-        this.setState({ selectWarehousVal: e.target.value });
+        var warehousVal = e.target.value;
+        var warehous = _typeof(parseInt(warehousVal)) === _typeof(1) ? this.state.listWarehouses[warehousVal] : '';
+        this.setState({
+          selectWarehousVal: warehousVal,
+          selectWarehous: warehous
+        });
       }
     }, {
       key: 'render',
       value: function render() {
-        //    console.log('render');
         return _react2.default.createElement(
           'div',
           { style: this.s.container },
           _react2.default.createElement(
             'select',
             { style: this.s.select,
+              name: 'areas',
               onChange: this.onChangeArea,
               value: this.state.selectAreaVal
             },
@@ -299,6 +329,7 @@
           _react2.default.createElement(
             'select',
             { style: this.s.select,
+              name: 'cities',
               onChange: this.onChangeCity,
               value: this.state.selectCityVal
             },
@@ -313,13 +344,14 @@
           _react2.default.createElement(
             'select',
             { style: this.s.select,
+              name: 'warehouses',
               onChange: this.onChangeWarehous
             },
             this.state.listWarehouses.map(function (i, ind) {
               return _react2.default.createElement(
                 'option',
                 { value: ind, key: ind },
-                i
+                i.Description
               );
             })
           )

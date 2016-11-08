@@ -1,21 +1,21 @@
 import React, {PropTypes} from 'react';
 import ApiNovaPochta from 'yz-react-deliveri-newpochta';
 
-
 class FormNovaPochta extends React.Component {
 
   constructor(props) {
     super(props);
     this.Api = new ApiNovaPochta;
     this.state = {
+      listAreas: [],
       listCities: [],
       listCitiesCurrent: [],
-      selectCity: null,
-      selectCityVal: '',
       listWarehouses: [],
-      selectWarehousVal: null,
-      listAreas: [],
       selectArea: null,
+      selectCity: null,
+      selectWarehous: null,
+      selectCityVal: '',
+      selectWarehousVal: '',
       selectAreaVal: ''
     };
     this.cbCities = this.cbCities.bind(this);
@@ -30,6 +30,8 @@ class FormNovaPochta extends React.Component {
     this.apiKey = props.apiKey;
     this.stylesNP = this.stylesNP.bind(this);
     this.s = this.stylesNP();
+
+    this.result = this.props.cb;
   }
 
   stylesNP() {
@@ -63,13 +65,21 @@ class FormNovaPochta extends React.Component {
     this.Api.getAreas(this.cbAreas, this.apiKey);
   }
 
+  componentDidUpdate() {
+    let res = {
+      selectArea: this.state.selectArea.Description,
+      selectCity: this.state.selectCity.Description,
+      selectWarehous: this.state.selectWarehous.Description,
+    };
+//    console.log('componentDidUpdate', this.state);
+    this.result(res);
+  }
+
   shouldComponentUpdate() {
     if (!this.state.selectArea) {
-//      console.log('should: Not selectArea', this.state);
       return false;
     }
     else if (!this.state.selectCity) {
-//      console.log('should: Not selectCities', this.state);
       return false;
     }
     else return true;
@@ -111,7 +121,8 @@ class FormNovaPochta extends React.Component {
         listCities: res,
         listCitiesCurrent: selectCities,
         selectCity: selectCities[0],
-        selectCityVal: '0'
+        selectCityVal: '0',
+        selectWarehousVal: '0',
       });
 
       if (this.state.selectArea) {
@@ -121,11 +132,24 @@ class FormNovaPochta extends React.Component {
     }
   }
   cbWarehouse(result) {
+    let space = [{
+      Ref: '-',
+      Description: '- - - - - - - - - - - - - - - - '
+    }];
     let res = [];
     result.data.forEach((item)=> {
-      res.push(item.Description);
+      res.push({
+        Ref: item.Ref,
+        Description: item.Description
+      });
     });
-    this.setState({listWarehouses: res});
+    let warehousVal = this.state.selectWarehousVal;
+    let warehous = res.length>0 ? res[warehousVal] : space;
+    this.setState(
+      {
+        listWarehouses: res,
+        selectWarehous: warehous
+      });
   }
 
   getCitiesOfArea(listCities, area) {
@@ -139,9 +163,9 @@ class FormNovaPochta extends React.Component {
     if (selectCity.length > 0) {
       this.setState({
         selectArea: selectArea,
-        selectAreaVal: value,
-        listCitiesCurrent: selectCity,
         selectCity: selectCity[0],
+        listCitiesCurrent: selectCity,
+        selectAreaVal: value,
         selectCityVal: '0',
         selectWarehousVal: '0'
       });
@@ -157,12 +181,13 @@ class FormNovaPochta extends React.Component {
 
       this.setState({
         selectArea: selectArea,
-        selectAreaVal: value,
-        listCitiesCurrent: space,
         selectCity: space[0],
-        selectCityVal: '0',
+        selectWarehous: space[0],
+        listCitiesCurrent: space,
         listWarehouses: ['- - - - - - - - - - - - - - - - '],
-        selectWarehousVal: '0'
+        selectAreaVal: value,
+        selectCityVal: '0',
+        selectWarehousVal: '0',
       });
     }
   }
@@ -180,19 +205,27 @@ class FormNovaPochta extends React.Component {
       {"CityName": this.state.listCitiesCurrent[parseInt(value)].Description});
   }
   onChangeWarehous(e) {
-    this.setState({selectWarehousVal: e.target.value});
+    let warehousVal = e.target.value;
+    let warehous = typeof parseInt(warehousVal) === typeof 1 ? this.state.listWarehouses[warehousVal] : '';
+    this.setState(
+      {
+        selectWarehousVal: warehousVal,
+        selectWarehous: warehous
+      });
   }
 
   render() {
     return (
       <div style={this.s.container}>
         <select style={this.s.select}
+                name="areas"
                 onChange={ this.onChangeArea }
                 value={this.state.selectAreaVal}
         >
           { this.state.listAreas.map((i, ind) => ( <option value={ind} key={ind}>{i.Description}</option> )) }
         </select>
         <select style={this.s.select}
+                name="cities"
                 onChange={ this.onChangeCity }
                 value={this.state.selectCityVal}
         >
@@ -200,9 +233,10 @@ class FormNovaPochta extends React.Component {
             this.state.listCitiesCurrent.map((i, ind) => ( <option value={ind} key={ind}>{i.Description}</option> )) }
         </select>
         <select style={this.s.select}
+                name="warehouses"
                 onChange={ this.onChangeWarehous }
         >
-          { this.state.listWarehouses.map((i, ind) => ( <option value={ind} key={ind}>{i}</option> )) }
+          { this.state.listWarehouses.map((i, ind) => ( <option value={ind} key={ind}>{i.Description}</option> )) }
         </select>
       </div>
     )
