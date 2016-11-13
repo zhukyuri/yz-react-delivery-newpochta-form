@@ -79,10 +79,12 @@ class FormNovaPochta extends React.Component {
     if (!this.state.selectArea) {
       return false;
     }
-    else if (!this.state.selectCity) {
+    else if ( !this.state.selectCity ) {
       return false;
     }
-    else return true;
+    else {
+      return true
+    };
   }
 
   cbAreas(result) {
@@ -222,15 +224,14 @@ class FormNovaPochta extends React.Component {
                 onChange={ this.onChangeArea }
                 value={this.state.selectAreaVal}
         >
-          { this.state.listAreas.map((i, ind) => ( <option value={ind} key={ind}>{i.Description}</option> )) }
+          { this.state.listAreas.map((i, ind) => ( <option value={ind} key={ind}> {i.Description} </option> )) }
         </select>
         <select style={this.s.select}
                 name="cities"
                 onChange={ this.onChangeCity }
                 value={this.state.selectCityVal}
         >
-          {
-            this.state.listCitiesCurrent.map((i, ind) => ( <option value={ind} key={ind}>{i.Description}</option> )) }
+          { this.state.listCitiesCurrent.map((i, ind) => ( <option value={ind} key={ind}>{i.Description}</option> )) }
         </select>
         <select style={this.s.select}
                 name="warehouses"

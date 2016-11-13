@@ -170,7 +170,9 @@
           return false;
         } else if (!this.state.selectCity) {
           return false;
-        } else return true;
+        } else {
+          return true;
+        };
       }
     }, {
       key: 'cbAreas',
@@ -322,7 +324,9 @@
               return _react2.default.createElement(
                 'option',
                 { value: ind, key: ind },
-                i.Description
+                ' ',
+                i.Description,
+                ' '
               );
             })
           ),
